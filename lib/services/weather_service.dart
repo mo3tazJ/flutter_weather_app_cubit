@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class WeatherService {
   String apiKey = "9437d7cbaf49482a9b741047251301";
   String baseUrl = "http://api.weatherapi.com/v1";
-  Future<WeatherModel> getWeather({required String cityName}) async {
+  Future<WeatherModel> getWeatherData({required String cityName}) async {
     Uri url =
         Uri.parse('$baseUrl/forecast.json?key=$apiKey&q=$cityName&days=7');
     http.Response response = await http.get(url);
