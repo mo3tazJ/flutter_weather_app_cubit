@@ -4,13 +4,18 @@ import 'package:flutter_weather_app/providers/weather_provider.dart';
 import 'package:flutter_weather_app/services/weather_service.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class SearchPage extends StatelessWidget {
   String? cityName;
+
+  SearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.lightBlueAccent.shade100,
+        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Search a City"),
       ),
       body: Center(

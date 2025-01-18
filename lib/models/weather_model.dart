@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
+
 class WeatherModel {
-  final String date;
+  final DateTime date;
   final double temp;
   final double maxTemp;
   final double minTemp;
@@ -14,7 +16,7 @@ class WeatherModel {
   factory WeatherModel.fromJson(dynamic data) {
     var targetedData = data["forecast"]["forecastday"][0]["day"];
     return WeatherModel(
-      date: data["location"]['localtime'],
+      date: DateTime.parse(data["location"]['localtime']),
       temp: targetedData["avgtemp_c"],
       maxTemp: targetedData["maxtemp_c"],
       minTemp: targetedData["mintemp_c"],
@@ -38,6 +40,25 @@ class WeatherModel {
       return "assets/images/rainy.png";
     } else {
       return "assets/images/clear.png";
+    }
+  }
+
+  MaterialColor getThemeColor() {
+    if (weatherStateName == 'Sunny' || weatherStateName == 'Clear') {
+      return Colors.orange;
+    } else if (weatherStateName == 'Partly cloudy' ||
+        weatherStateName == 'Cloudy' ||
+        weatherStateName.contains("loud") ||
+        weatherStateName == 'Mist') {
+      return Colors.blueGrey;
+    } else if (weatherStateName.contains("hunder")) {
+      return Colors.deepPurple;
+    } else if (weatherStateName.contains("now")) {
+      return Colors.lightBlue;
+    } else if (weatherStateName.contains("ain")) {
+      return Colors.blue;
+    } else {
+      return Colors.orange;
     }
   }
 

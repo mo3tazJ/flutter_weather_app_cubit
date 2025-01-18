@@ -5,7 +5,7 @@ import 'package:flutter_weather_app/providers/weather_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -18,7 +18,14 @@ class _HomePageState extends State<HomePage> {
     weatherData = Provider.of<WeatherProvider>(context).weatherData;
     return Scaffold(
       appBar: AppBar(
+        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // backgroundColor: Colors.blueAccent,
+        backgroundColor:
+            Provider.of<WeatherProvider>(context).weatherData == null
+                ? Colors.lightBlueAccent.shade100
+                : Provider.of<WeatherProvider>(context)
+                    .weatherData!
+                    .getThemeColor(),
         title: const Text("Weather App"),
         actions: [
           IconButton(
@@ -51,7 +58,17 @@ class _HomePageState extends State<HomePage> {
               ),
             )
           : Container(
-              color: Colors.orangeAccent,
+              // color: Colors.orangeAccent,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                colors: [
+                  weatherData!.getThemeColor(),
+                  weatherData!.getThemeColor()[300]!,
+                  weatherData!.getThemeColor()[100]!,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              )),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -59,15 +76,18 @@ class _HomePageState extends State<HomePage> {
                     flex: 3,
                   ),
                   Text(
-                    Provider.of<WeatherProvider>(context).cityName ?? "No City",
-                    style: TextStyle(
+                    Provider.of<WeatherProvider>(context)
+                            .cityName!
+                            .capitalize() ??
+                        "No City",
+                    style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    "Updated: 12:54 PM",
-                    style: TextStyle(
+                    "updated at  ${weatherData!.date.hour.toString()}:${weatherData!.date.minute.toString()}",
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.normal,
                     ),
@@ -81,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                       Image.asset(weatherData!.getImage()),
                       Text(
                         "${weatherData!.temp.toInt()}",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.normal,
                         ),
@@ -90,14 +110,14 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Text(
                             "Max: ${weatherData!.maxTemp.toInt()}",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.normal,
                             ),
                           ),
                           Text(
                             "Min: ${weatherData!.minTemp.toInt()}",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.normal,
                             ),
@@ -112,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     weatherData?.weatherStateName ??
                         "", // Or: weatherData!.weatherStateName , Because the null check at the body beginning
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                     ),
@@ -124,5 +144,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
     );
+  }
+}
+
+extension on String {
+  String? capitalize() {
+    // ignore: unnecessary_this
+    return "${this[0].toUpperCase()}${this.substring(1)}";
   }
 }
