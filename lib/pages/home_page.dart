@@ -4,14 +4,13 @@ import 'package:flutter_weather_app/cubits/weather_cubit/weather_cubit.dart';
 import 'package:flutter_weather_app/cubits/weather_cubit/weather_state.dart';
 import 'package:flutter_weather_app/models/weather_model.dart';
 import 'package:flutter_weather_app/pages/search_page.dart';
-import 'package:flutter_weather_app/providers/weather_provider.dart';
-import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   WeatherModel? weatherData;
-
+  String? wrong;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,40 +39,18 @@ class HomePage extends StatelessWidget {
           if (state is WeatherLoading) {
             return const LoadingPage();
           } else if (state is WeatherSuccess) {
+            weatherData = BlocProvider.of<WeatherCubit>(context).weatherModel;
             return SuccessPage(weatherData: weatherData);
           } else if (state is WeatherFailure) {
-            return const FailurePage();
+            wrong = BlocProvider.of<WeatherCubit>(context).wrong;
+            return FailurePage(
+              wrong: wrong,
+            );
           } else {
             return const DefaultPage();
           }
         },
       ),
-    );
-  }
-}
-
-class FailurePage extends StatelessWidget {
-  const FailurePage({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Something Went Wrong, Try Again Later!"),
-    );
-  }
-}
-
-class LoadingPage extends StatelessWidget {
-  const LoadingPage({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(),
     );
   }
 }
@@ -107,7 +84,7 @@ class SuccessPage extends StatelessWidget {
             flex: 3,
           ),
           Text(
-            Provider.of<WeatherProvider>(context).cityName!.capitalize() ??
+            BlocProvider.of<WeatherCubit>(context).cityName!.capitalize() ??
                 "No City",
             style: const TextStyle(
               fontSize: 30,
@@ -200,6 +177,41 @@ class DefaultPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class FailurePage extends StatelessWidget {
+  FailurePage({super.key, this.wrong});
+  String? wrong;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Center(
+        child: Text(
+          textAlign: TextAlign.center,
+          "$wrong 😔",
+          style: const TextStyle(
+            fontSize: 26,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 }

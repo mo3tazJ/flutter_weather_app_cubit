@@ -1,13 +1,12 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_weather_app/models/weather_model.dart';
-import 'package:flutter_weather_app/providers/weather_provider.dart';
-import 'package:flutter_weather_app/services/weather_service.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_weather_app/cubits/weather_cubit/weather_cubit.dart';
 
 // ignore: must_be_immutable
 class SearchPage extends StatelessWidget {
   String? cityName;
-
+  String? wrong;
   SearchPage({super.key});
 
   @override
@@ -21,24 +20,36 @@ class SearchPage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: TextField(
-            onSubmitted: (value) async {
+          child: TextFormField(
+            obscureText: false,
+            autofocus: true,
+            onChanged: (data) {
+              cityName = data;
+              log(cityName!);
+              BlocProvider.of<WeatherCubit>(context).cityName = cityName;
+            },
+            onFieldSubmitted: (value) async {
               cityName = value;
-              WeatherService service = WeatherService();
-              WeatherModel weather =
-                  await service.getWeatherData(cityName: cityName!);
-              Provider.of<WeatherProvider>(context, listen: false).weatherData =
-                  weather;
-              Provider.of<WeatherProvider>(context, listen: false).cityName =
-                  cityName;
-
+              log("from textfield onSubmitted: city name = $cityName");
+              BlocProvider.of<WeatherCubit>(context).cityName = cityName;
+              BlocProvider.of<WeatherCubit>(context)
+                  .getWeather(cityName: cityName!);
               Navigator.pop(context);
             },
             decoration: InputDecoration(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 18, vertical: 32),
               labelText: "Search ...",
-              suffixIcon: const Icon(Icons.search),
+              suffixIcon: GestureDetector(
+                child: const Icon(Icons.search),
+                onTap: () async {
+                  cityName = BlocProvider.of<WeatherCubit>(context).cityName;
+                  log("from icon ontap: city name = $cityName");
+                  BlocProvider.of<WeatherCubit>(context)
+                      .getWeather(cityName: cityName!);
+                  Navigator.pop(context);
+                },
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
